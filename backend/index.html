@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Low level rest example</title>
+  <script src="min.js"></script>
+</head>
+
+<body>
+  <button id="get">GET request</button>
+  <button id="post">POST request</button>
+  <button id="put">PUT request</button>
+  <button id="delete">DELETE request</button>
+
+  <h1>Tabla de Datos</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>nombre</th>
+        <th>Genero</th>
+        <th>Temporada</th>
+        <th>Capitulos</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-body">
+      <!-- Los resultados de la API se mostrarán aquí -->
+    </tbody>
+  </table>
+
+  <script>
+    // Realizar la solicitud GET a la API en PHP
+    fetch('method.php')
+      .then(response => response.json())
+      .then(data => {
+        const tablaBody = document.getElementById('tabla-body');
+        data.forEach(item => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+                          <td>${item.id}</td>
+                          <td>${item.nombre}</td>
+                          <td>${item.genero}</td>
+                          <td>${item.temporada}</td>
+                          <td>${item.capitulos}</td>
+                      `;
+          tablaBody.appendChild(row);
+        });
+      })
+      .catch(error => console.error('Error:', error));
+  </script>
+
+
+  <h1>API de Ejemplo (POST)</h1>
+
+  <form id="miFormulario1">
+    <label for="nombre">nombre:</label>
+    <input type="text" id="nombre" name="nombre" required><br><br>
+
+    <label for="genero">Genero:</label>
+    <input type="text" id="genero" name="genero" required><br><br>
+
+    <label for="temporada">temporada:</label>
+    <input type="text" id="temporada" name="temporada" required><br><br>
+
+    <label for="capitulos">capitulos:</label>
+    <input type="text" id="capitulos" name="capitulos" required><br><br>
+
+
+    <input type="submit" value="Enviar">
+  </form>
+
+  <div id="resultado1"></div>
+
+  <iframe src="put.php" width="100%" height="300" style="border:none;"></iframe>
+  <iframe src="index2.php" width="100%" height="100%" style="border:none;"></iframe>
+
+
+  <script>
+    const formulario1 = document.getElementById('miFormulario1');
+    const resultadoDiv1 = document.getElementById('resultado1');
+
+    formulario1.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const formData = new FormData(formulario1);
+
+      fetch('method.php', {
+        method: 'POST',
+        body: formData
+      })
+        .then(response => response.text())
+        .then(data => {
+          resultadoDiv1.textContent = data;
+          formulario1.reset();
+        })
+        .catch(error => console.error('Error:', error));
+    });
+  </script>
+
+
+  <script>
+    $(document).ready(function () {
+      var requestTypes = ["get", "post", "put", "delete"];
+
+      $.each(requestTypes, function (index, value) {
+        $('#' + value).on('click', function () {
+          request = triggerRequest(value);
+        });
+      });
+
+      function triggerRequest(requestType) {
+        if ($.inArray(requestType, requestTypes) !== -1) {
+          var data = { firstname: "John", lastname: "doe" };
+          return $.ajax({
+            method: requestType,
+            url: "method.php",
+            cache: false,
+            async: true,
+            data: data
+          }).done(function (msg) {
+            alert("request methode = " + msg);
+          }).fail(function (jqXHR, textStatus) {
+            console.error("Request failed: ");
+            console.error(textStatus);
+          });
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>
